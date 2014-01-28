@@ -1,0 +1,7 @@
+<?php
+//Database information
+DB::$user = "root";
+DB::$password = ""; //Your password here!
+DB::$dbName = "filmbin";
+DB::$host = "localhost";
+?>
