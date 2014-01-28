@@ -10,7 +10,6 @@ api/application/cache/*
 api/application/logs/*
 !api/application/logs/index.html
 !api/application/logs/.htaccess
-api/.htacccess
 
 # These files are replaced my templates, because security and stuff 
 api/application/config/config.php
