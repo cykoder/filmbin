@@ -4,6 +4,9 @@ class Titles_model extends CI_Model
 {
     public function get_latest_entries($limit=10, $type=null)
     {
+    	//Limit to 100 at a time
+    	if($limit > 100) $limit = 100;
+    	
     	//Check if we have a type
     	if($type != null) $this->db->where("type", $type);
 

@@ -56,8 +56,7 @@ class Titles extends REST_Controller
             else //Requesting a list of latest entries
             {
                 //Set a limit
-                $limit=10;
-                if($this->get("count") != null) $limit = intval($this->get("count"));
+                $limit = $this->get("count") ? $this->get("count") : 10;
 
                 //Get the latest entries
                 $entries = $this->titles_model->get_latest_entries($limit);
@@ -201,8 +200,7 @@ class Titles extends REST_Controller
     public function movies_get()
     {
         //Set a limit
-        $limit=10;
-        if($this->get("count") != null) $limit = intval($this->get("count"));
+        $limit = $this->get("count") ? $this->get("count") : 10;
 
         //Get the latest movies
         $entries = $this->titles_model->get_latest_entries($limit, "movie");
@@ -224,8 +222,7 @@ class Titles extends REST_Controller
     public function series_get()
     {
         //Set a limit
-        $limit=10;
-        if($this->get("count") != null) $limit = intval($this->get("count"));
+        $limit = $this->get("count") ? $this->get("count") : 10;
 
         //Get the latest series
         $entries = $this->titles_model->get_latest_entries($limit, "series");
