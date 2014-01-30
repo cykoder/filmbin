@@ -13,13 +13,23 @@ class Search_model extends CI_Model
         //Parse fields
         for($i=0; $i < count($fields); $i++)
         {
-            if($i == 0) //First field only needs "LIKE"
+            //Check if we're wanting an exact match
+            $pos = strpos($fields[$i], "=");
+            if($pos > 0)
             {
-                $this->db->like($fields[$i], $query);
+                //WHERE "field" = "value"
+                $this->db->where(substr($fields[$i], 0, $pos), substr($fields[$i], $pos+1));
             }
-            else //Other fields needs "OR LIKE"
+            else
             {
-                $this->db->or_like($fields[$i], $query);
+                if($i == 0) //First field only needs "LIKE"
+                {
+                    $this->db->like($fields[$i], $query);
+                }
+                else //Other fields needs "OR LIKE"
+                {
+                    $this->db->or_like($fields[$i], $query);
+                }
             }
         }
     }
@@ -64,6 +74,9 @@ class Search_model extends CI_Model
 
     public function search($table, $query, $fields, $order, $limit = 10, $offset = 0, $select = "*")
     {
+        //Limit to 100 at a time
+        if($limit > 100) $limit = 100;
+        
         //Select
         $this->select($table, $query, $fields, $select = "*");
 

@@ -35,3 +35,7 @@ You'll then need to import the sample database (coming soon)
 Contact
 ===
 Any issues or queries, the best way to contact me is to email me at [sshellawell@gmail.com](mailto:sshellawell@gmail.com), tweet me [@Beckiwoosh](http://twitter.com/Beckiwoosh) or add me on Skype: *becki.ness*
+
+Credits
+===
+*	William J Robin - Created a project called TuneBin that worked in the same way, only for music. Inspired FilmBin.
