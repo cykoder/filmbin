@@ -6,7 +6,7 @@ class Titles_model extends CI_Model
     {
     	//Limit to 100 at a time
     	if($limit > 100) $limit = 100;
-    	
+
     	//Check if we have a type
     	if($type != null) $this->db->where("type", $type);
 
@@ -90,17 +90,7 @@ class Titles_model extends CI_Model
 		return $this->get($id);
     }
 
-    private function validate_data($data)
-    {
-    	//Make sure these are integers!
-		if(isset($data["release_date"])) $data["release_date"] = intval($data["release_date"]);
-		if(isset($data["runtime"])) $data["release_date"] = intval($data["runtime"]);
-
-		//Return clean data
-		return $data;
-    }
-
-    private function array_to_object($array)
+    public function array_to_object($array)
     {
     	//Check if even an array
     	if(is_array($array))
@@ -117,10 +107,20 @@ class Titles_model extends CI_Model
 			//Return the object
 			return $object;
 		}
-		else
+		else //Not even an array, just return it back
 		{
 			return $array;
 		}
+    }
+
+    private function validate_data($data)
+    {
+    	//Make sure these are integers!
+		if(isset($data["release_date"])) $data["release_date"] = intval($data["release_date"]);
+		if(isset($data["runtime"])) $data["release_date"] = intval($data["runtime"]);
+
+		//Return clean data
+		return $data;
     }
 }
 ?>

@@ -14,7 +14,7 @@ class Titles extends REST_Controller
     );
 
     /*
-        api/titles/:id,:type
+        api/titles/
         Parameters: id (optional)
                     type (optional) (movie, series)
         Access level: 1
@@ -125,7 +125,7 @@ class Titles extends REST_Controller
 	}
 
     /*  
-        api/titles/
+        api/titles/:id
         Parameters: id (int)
                     title (optional, string)
                     rated (optional, string)
@@ -171,7 +171,7 @@ class Titles extends REST_Controller
 	}
     
     /*  
-        api/titles/
+        api/titles/:id
         Parameters: id (int)
         Access level: 3
     */
