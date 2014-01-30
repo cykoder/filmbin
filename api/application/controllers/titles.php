@@ -14,38 +14,61 @@ class Titles extends REST_Controller
     );
 
     /*
-        api/titles/:id
+        api/titles/:id,:type
         Parameters: id (optional)
+                    type (optional) (movie, series)
         Access level: 1
     */
     public function index_get()
     {
-        //Check if we're requesting a single title
-        if($this->get('id'))
+        //Check if we're requesting a certain type
+        if($this->get("type") != null)
         {
-            //Get title
-            $result = $this->titles_model->get($this->get("id"));
-
-            //Check if title exists
-            if ($result != null)
+            if($this->get("type") == "movie")
             {
-                $this->response($result[0], 200);
+                //Same as api/titles/movies
+                $this->movies_get();
             }
-            else //Title doesn't exist
+            else if($this->get("type") == "series")
             {
-                $this->response(array("error" => "Title not found"), 404);
+                //Same as api/titles/series
+                $this->series_get();
             }
         }
-        else //Requesting a list of latest entries
+        else
         {
-            $entries = $this->titles_model->get_latest_entries();
-            if (count($entries) > 0)
+            //Check if we're requesting a single title
+            if($this->get('id'))
             {
-                $this->response($entries, 200);
+                //Get title
+                $result = $this->titles_model->get($this->get("id"));
+
+                //Check if title exists
+                if ($result != null)
+                {
+                    $this->response($result[0], 200);
+                }
+                else //Title doesn't exist
+                {
+                    $this->response(array("error" => "Title not found"), 404);
+                }
             }
-            else //Some kind of error, hide!
+            else //Requesting a list of latest entries
             {
-                $this->response(null, 400);
+                //Set a limit
+                $limit=10;
+                if($this->get("count") != null) $limit = intval($this->get("count"));
+
+                //Get the latest entries
+                $entries = $this->titles_model->get_latest_entries($limit);
+                if (count($entries) > 0)
+                {
+                    $this->response($entries, 200);
+                }
+                else //Some kind of error, hide!
+                {
+                    $this->response(null, 400);
+                }
             }
         }
     }
@@ -81,10 +104,6 @@ class Titles extends REST_Controller
            isset($data["poster"]) &&
            isset($data["type"]) && ($data["type"] == "movie" || $data["type"] == "series" || $data["type"] == "episode"))
         {
-            //Intval!
-            $data["release_date"] = intval($data["release_date"]);
-            $data["runtime"] = intval($data["runtime"]);
-
             //Insert into the database, get the ID
             $title = $this->titles_model->add($data);
             
@@ -92,12 +111,12 @@ class Titles extends REST_Controller
             if($title != null)
             {
                 //Success! return the title object
-                $this->response($title, 200);
+                $this->response($title, 201);
             }
             else
             {
                 //Something went wrong, return an error
-                $this->response(array("error" => "Unable to add title", "data" => $data), 400);
+                $this->response(array("error" => "Unable to add title, possibly already added", "data" => $data), 400);
             }
         }
         else //Bad request!
@@ -124,7 +143,32 @@ class Titles extends REST_Controller
     */
 	public function index_put()
 	{
-        print_r($this->put('title'));
+        //Check if we even have an ID
+        if($this->get("id"))
+        {
+            //Set data into array
+            $data = $this->put();
+
+            //Update the title
+            $title = $this->titles_model->update($this->get("id"), $data);
+            
+            //Did it work?!
+            if($title != null)
+            {
+                //Success! return the title object
+                $this->response($title, 200);
+            }
+            else
+            {
+                //Something went wrong, return an error
+                $data['id'] = $this->get("id");
+                $this->response(array("error" => "Unable to update title", "data" => $data), 400);
+            }
+        }
+        else //Bad request!
+        {
+            $this->response(null, 400);
+        }
 	}
     
     /*  
@@ -134,9 +178,64 @@ class Titles extends REST_Controller
     */
     public function index_delete()
     {
-        //$this->some_model->deletesomething( $this->get('id') );
-        $message = array('id' => $this->get('id'), 'message' => 'DELETED!');
-        
-        $this->response($message, 200); // 200 being the HTTP response code
+        //Check if we even have an ID
+        if($this->get("id"))
+        {
+            //Delete the title
+            $title = $this->titles_model->delete($this->get("id"));
+
+            //Return an OK
+            $this->response(array("id" => $this->get('id'), "message" => "deleted"), 200);
+        }
+        else //Bad request!
+        {
+            $this->response(null, 400);
+        }
+    }
+
+    /*
+        api/titles/movies
+        Parameters:
+        Access level: 1
+    */
+    public function movies_get()
+    {
+        //Set a limit
+        $limit=10;
+        if($this->get("count") != null) $limit = intval($this->get("count"));
+
+        //Get the latest movies
+        $entries = $this->titles_model->get_latest_entries($limit, "movie");
+        if (count($entries) > 0)
+        {
+            $this->response($entries, 200);
+        }
+        else //Some kind of error, hide!
+        {
+            $this->response(array("error" => "Unable to select latest movies"), 400);
+        }
+    }
+
+    /*
+        api/titles/series
+        Parameters:
+        Access level: 1
+    */
+    public function series_get()
+    {
+        //Set a limit
+        $limit=10;
+        if($this->get("count") != null) $limit = intval($this->get("count"));
+
+        //Get the latest series
+        $entries = $this->titles_model->get_latest_entries($limit, "series");
+        if (count($entries) > 0)
+        {
+            $this->response($entries, 200);
+        }
+        else //Some kind of error, hide!
+        {
+            $this->response(array("error" => "Unable to select latest series"), 400);
+        }
     }
 }
